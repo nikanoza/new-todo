@@ -15,7 +15,13 @@ function App() {
     const getData = async () => {
       try {
         const response = await axios.get(
-          "https://py-todo-production.up.railway.app/todos"
+          "https://py-todo-production.up.railway.app/todos",
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
         );
         console.log(response.data);
       } catch (error) {

@@ -19,11 +19,10 @@ function App() {
           {
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json",
             },
           }
         );
-        console.log(response.data);
+        setTasks(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -41,26 +40,56 @@ function App() {
     setTasks(clone);
   };
 
-  const updateTaskStatus = (id: number) => {
-    const clone = tasks.slice();
-    const task = clone.find((item) => item.id === id);
-    if (task) {
-      task["active"] = !task?.active;
+  const updateTaskStatus = async (task: task) => {
+    try {
+      await axios.put(
+        "https://py-todo-production.up.railway.app/todos/" +
+          task.id +
+          "/update/",
+        {
+          text: task.text,
+          active: !task.active,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      const clone = tasks.slice();
+      const taskItem = clone.find((item) => item.id === task.id);
+      if (taskItem) {
+        task["active"] = !task?.active;
+      }
+      setTasks(clone);
     }
-    setTasks(clone);
   };
 
-  const deleteTask = (id: number) => {
-    const clone = tasks.slice();
-    const taskIndex = clone.findIndex((item) => item.id === id);
-    clone.splice(taskIndex, 1);
-    setTasks(clone);
+  const deleteTask = async (id: number) => {
+    try {
+      await axios.delete(
+        "https://py-todo-production.up.railway.app/todos/" + id + "/delete/"
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      const clone = tasks.slice();
+      const taskIndex = clone.findIndex((item) => item.id === id);
+      clone.splice(taskIndex, 1);
+      setTasks(clone);
+    }
   };
 
-  const clearCompleted = () => {
-    const clone = tasks.slice();
-    const clear = clone.filter((task) => !task.active);
-    setTasks(clear);
+  const clearCompleted = async () => {
+    try {
+      await axios.delete(
+        "https://py-todo-production.up.railway.app/delete-inactive-todos/"
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      const clone = tasks.slice();
+      const clear = clone.filter((task) => !task.active);
+      setTasks(clear);
+    }
   };
 
   const changeDisplay = (text: string) => {

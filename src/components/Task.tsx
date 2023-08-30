@@ -9,7 +9,7 @@ type task = {
 
 const Task: React.FC<{
   item: task;
-  updateTaskStatus: (id: number) => void;
+  updateTaskStatus: (task: task) => void;
   deleteTask: (id: number) => void;
   darkMode: boolean;
 }> = (props) => {
@@ -18,7 +18,7 @@ const Task: React.FC<{
       <Checkbox
         darkMode={props.darkMode}
         onClick={() => {
-          props.updateTaskStatus(props.item.id);
+          props.updateTaskStatus(props.item);
         }}
         status={props.item.active}
       >

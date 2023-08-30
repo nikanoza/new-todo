@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Check } from "../svg";
 import { StyledElementPropsType } from "../types";
+import axios from "axios";
 
 type task = {
   text: string;
@@ -25,18 +26,28 @@ const NewTask: React.FC<{
     setStatus(!status);
   };
 
-  const addTask = (event: React.KeyboardEvent) => {
+  const addTask = async (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && taskValue.length > 3) {
-      const id =
-        props.tasks.length > 0 ? props.tasks[props.tasks.length - 1].id + 1 : 1;
-      const newTask: task = {
-        text: taskValue,
-        active: status,
-        id,
-      };
-      props.addTask(newTask);
-      setTaskValue("");
-      setStatus(false);
+      try {
+        const response = await axios.post(
+          "https://py-todo-production.up.railway.app/todos/create/",
+          {
+            text: taskValue,
+            active: status,
+          }
+        );
+        const newTask: task = {
+          text: taskValue,
+          active: status,
+          id: response.data.id,
+        };
+        props.addTask(newTask);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setTaskValue("");
+        setStatus(false);
+      }
     }
   };
 
